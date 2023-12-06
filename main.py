@@ -3,9 +3,21 @@ This program will be doing the CMSC 411 project of
 creating a single cycle processor using MIPS architecture
 """
 
-FILENAME = "Instructions1.txt"
+INSTRUCTION_FILENAME = "Instructions1.txt"
+MEMORY_FILENAME = "Memory1.txt"
+INITIAL_MEMORY = "IMemory.txt"
+
+iMemoryList = []
 instructionList = []
 instructionCounter = 0
+currentInstruction = ""
+
+#get memory will populate the IMemory.txt into iMemoryList
+def getMemory(filename):
+    memoryFile = open(filename, "r")
+    for line in memoryFile:
+        iMemoryList.append(line.strip())
+    memoryFile.close()
 
 #fetch instruction will get all the instructions
 #and put them in a list.
@@ -45,13 +57,13 @@ def programCounter(counter):
 #instruction the current instruction is
 def instructionMemory(instructionList):
     instruction = instructionList[instructionCounter]
-    print(controlUnit(instruction[0:6]))
+    currentInstruction = instruction
     
 #control unit will take the first 6 bits of the instruction as an input
 #and determine what instruction should be ran
 def controlUnit(opcode):
     if(opcode == "000000"):
-        return "R"
+        return aluControl()
     elif(opcode == "001001"):
         return "addiu"
     elif(opcode == "000100"):
@@ -69,9 +81,20 @@ def controlUnit(opcode):
 #It will get the func code of the instruction as the input and output
 #the operation the ALU has to do
 def aluControl(funcCode):
+    if(funcCode == "100001"):
+        return "addu"
+    elif(funcCode == "100011"):
+        return "subu"
+    elif(funcCode == "100100"):
+        return "and"
+    elif(funcCode == "100101"):
+        return "or"
+
+
+def addu(instruction):
     pass
 
 if __name__ == "__main__":
-    fetchInstruction(FILENAME)
-    instructionMemory(instructionList)
+    fetchInstruction(INSTRUCTION_FILENAME)
+    print(instructionMemory(instructionList))
     
