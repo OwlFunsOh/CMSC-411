@@ -7,10 +7,13 @@ INSTRUCTION_FILENAME = "Instructions1.txt"
 MEMORY_FILENAME = "Memory1.txt"
 INITIAL_MEMORY = "IMemory.txt"
 
-iMemoryList = []
-instructionList = []
-instructionCounter = 0
-currentInstruction = ""
+
+def populateRegisters():
+    registers = []
+    zero = "00000000000000000000000000000000"
+    for i in range(32):
+        registers.append(zero)
+    return registers
 
 #get memory will populate the IMemory.txt into iMemoryList
 def getMemory(filename):
@@ -57,13 +60,14 @@ def programCounter(counter):
 #instruction the current instruction is
 def instructionMemory(instructionList):
     instruction = instructionList[instructionCounter]
-    currentInstruction = instruction
+    return instruction
     
 #control unit will take the first 6 bits of the instruction as an input
 #and determine what instruction should be ran
-def controlUnit(opcode):
+def controlUnit(instruction):
+    opcode = instruction[0:6]
     if(opcode == "000000"):
-        return aluControl()
+        return aluControl(instruction[26:])
     elif(opcode == "001001"):
         return "addiu"
     elif(opcode == "000100"):
@@ -90,11 +94,31 @@ def aluControl(funcCode):
     elif(funcCode == "100101"):
         return "or"
 
+def binaryAdder(num1, num2):
+    #Converting to base 2 format
+    intNum1 = int(num1, 2)
+    intNum2 = int(num2, 2)
+    
+    sum = intNum1 + intNum2
+    
+    #Converting back to binary
+    finalString = bin(sum)[2:]
+    return finalString
 
 def addu(instruction):
     pass
 
+
+iMemoryList = []
+instructionList = []
+instructionCounter = 0
+currentInstruction = ""
+REGISTERS = populateRegisters()
+
+
 if __name__ == "__main__":
     fetchInstruction(INSTRUCTION_FILENAME)
-    print(instructionMemory(instructionList))
+    myInstruction = "00000000000000000000000000100101"
+    print(controlUnit(myInstruction))
+    
     
