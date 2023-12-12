@@ -120,6 +120,8 @@ def binaryAdder(num1, num2):
     finalString = bin(sum)[2:]
     return finalString
 
+#Below are the R type instructions
+
 def addu(instruction):
     targetReg = binary_to_decimal(instruction[11:16])
     sourceReg = binary_to_decimal(instruction[6:11])
@@ -157,7 +159,24 @@ def bitwiseOr(instruction):
     
     bitwiseOr.zfill(32)
     REGISTERS[destinationReg] = bitwiseOr
+
+def bitwiseNor(instruction):
+    targetReg = binary_to_decimal(instruction[11:16])
+    sourceReg = binary_to_decimal(instruction[6:11])
+    destinationReg = binary_to_decimal(instruction[16:21])
+    bitwiseOr = ""
     
+    length = targetReg.length()
+    
+    for i in range(length):
+        if(sourceReg[i] or targetReg[i]):
+            bitwiseOr.append(0)
+        else:
+            bitwiseOr.append(1)
+    
+    bitwiseOr.zfill(32)
+    REGISTERS[destinationReg] = bitwiseOr
+
 
 def bitwiseAnd(instruction):
     targetReg = binary_to_decimal(instruction[11:16])
@@ -175,6 +194,40 @@ def bitwiseAnd(instruction):
     
     bitwiseOr.zfill(32)
     REGISTERS[destinationReg] = bitwiseAnd
+
+#Below are the I type instructions
+
+def addiu(instruction):
+    targetReg = binary_to_decimal(instruction[11:16])
+    sourceReg = binary_to_decimal(instruction[6:11])
+    immediate = binary_to_decimal(instruction[16:32])
+
+    num1 = binary_to_decimal(REGISTERS[immediate])
+    num2 = binary_to_decimal(REGISTERS[sourceReg])
+    sum = num1 + num2
+
+    REGISTERS[targetReg] = decimal_to_binary(sum)
+
+def loadWord(instruction):
+    targetReg = binary_to_decimal(instruction[11:16])
+    sourceReg = binary_to_decimal(instruction[6:11])
+    immediate = binary_to_decimal(instruction[16:32])
+
+    toLoad = iMemoryList[immediate + sourceReg]
+    REGISTERS[targetReg] = toLoad
+
+def storeWord(instruction):
+    targetReg = binary_to_decimal(instruction[11:16])
+    sourceReg = binary_to_decimal(instruction[6:11])
+    immediate = binary_to_decimal(instruction[16:32])
+
+    storeAddress = sourceReg + immediate
+    iMemoryList[storeAddress] = REGISTERS[targetReg] 
+
+#Below will be the J type instructions
+
+
+
             
     
 iMemoryList = []
