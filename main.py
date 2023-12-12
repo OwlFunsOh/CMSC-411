@@ -7,6 +7,7 @@ import functions
 INSTRUCTION_FILENAME = "Instructions1.txt"
 MEMORY_FILENAME = "Memory1.txt"
 INITIAL_MEMORY = "IMemory.txt"
+HALT = "11111111111111111111111111111111"
 """
 iMemoryList = []
 instructionList = []
@@ -17,12 +18,20 @@ REGISTERS = functions.populateRegisters()
 """
 
 if __name__ == "__main__":
+    #Set up the files
     functions.fetchInstruction(INSTRUCTION_FILENAME)
     functions.getMemory(INITIAL_MEMORY)
-    functions.REGISTERS[0] = "00000000000000000000000000001100"
-    functions.REGISTERS[1] = "00000000000000000000000000001100"
-    functions.subu("00000000000000010000100000000000")
-    print(functions.REGISTERS)
+    
+    #main loop
+    while(functions.currentInstruction != HALT):
+        #perform instruction
+        functions.aluControl(functions.currentInstruction)
+        
+        #increment counter
+        functions.incrementCounter(functions.counter)
+        
+        
+    
 
     
     

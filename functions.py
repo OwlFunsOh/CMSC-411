@@ -74,7 +74,7 @@ def populateRegisters():
 
 
 #increments the program counter by 1
-def programCounter(counter):
+def incrementCounter(counter):
     counter += 1
     
 #control unit will take the first 6 bits of the instruction as an input
@@ -84,15 +84,15 @@ def controlUnit(instruction):
     if(opcode == "000000"):
         return aluControl(instruction[26:])
     elif(opcode == "001001"):
-        return "addiu"
+        addiu(instruction)
     elif(opcode == "000100"):
-        return "beq"
+        beq(instruction)
     elif(opcode == "000010"):
-        return "j"
+        jump(instruction)
     elif(opcode == "100011"):
-        return "lw"
+        loadWord(instruction)
     elif(opcode == "101011"):
-        return "sw"
+        storeWord(instruction)
     else:
         return "halt"
     
@@ -224,11 +224,22 @@ def storeWord(instruction):
     storeAddress = sourceReg + immediate
     iMemoryList[storeAddress] = REGISTERS[targetReg] 
 
+
+def beq(instruction):
+    targetReg = binary_to_decimal(instruction[11:16])
+    sourceReg = binary_to_decimal(instruction[6:11])
+    immediate = binary_to_decimal(instruction[16:32])
+
+    if(REGISTERS[sourceReg] == REGISTERS[targetReg]):
+        instructionCounter = instructionCounter + immediate
+    
+        
 #Below will be the J type instructions
 
-
-
-            
+def jump(instruction):
+    address = binary_to_decimal(instruction[6:32])
+    return address
+    
     
 iMemoryList = []
 instructionList = []
