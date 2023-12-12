@@ -140,6 +140,42 @@ def subu(instruction):
     difference = num1 - num2
     REGISTERS[destinationReg] = decimal_to_binary(difference)
     
+
+def bitwiseOr(instruction):
+    targetReg = binary_to_decimal(instruction[11:16])
+    sourceReg = binary_to_decimal(instruction[6:11])
+    destinationReg = binary_to_decimal(instruction[16:21])
+    bitwiseOr = ""
+    
+    length = targetReg.length()
+    
+    for i in range(length):
+        if(sourceReg[i] or targetReg[i]):
+            bitwiseOr.append(1)
+        else:
+            bitwiseOr.append(0)
+    
+    bitwiseOr.zfill(32)
+    REGISTERS[destinationReg] = bitwiseOr
+    
+
+def bitwiseAnd(instruction):
+    targetReg = binary_to_decimal(instruction[11:16])
+    sourceReg = binary_to_decimal(instruction[6:11])
+    destinationReg = binary_to_decimal(instruction[16:21])
+    bitwiseAnd = ""
+    
+    length = targetReg.length()
+    
+    for i in range(length):
+        if(sourceReg[i] == 1 and targetReg[i] == 1):
+            bitwiseAnd.append(1)
+        else:
+            bitwiseAnd.append(0)
+    
+    bitwiseOr.zfill(32)
+    REGISTERS[destinationReg] = bitwiseAnd
+            
     
 iMemoryList = []
 instructionList = []
