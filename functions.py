@@ -35,11 +35,12 @@ def combineBytes(list):
         else:
             fullInstruction = fullInstruction + byte
         counter += 1
+    instructionList.append(fullInstruction)
 
 #This function will take the list of instructions and separate the bits
 #into it's designated bit sizes. The control will determine what type of
 #instruction the current instruction is
-def instructionMemory(instructionList):
+def instructionMemory(instructionCounter):
     instruction = instructionList[instructionCounter]
     return instruction
 
@@ -76,6 +77,7 @@ def populateRegisters():
 #increments the program counter by 1
 def incrementCounter(counter):
     counter += 1
+    return counter
     
 #control unit will take the first 6 bits of the instruction as an input
 #and determine what instruction should be ran
@@ -243,7 +245,7 @@ def jump(instruction):
     
 iMemoryList = []
 instructionList = []
-instructionCounter = 0
 currentInstruction = ""
 REGISTERS = populateRegisters()
+instructionCounter = 0
     

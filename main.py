@@ -21,14 +21,24 @@ if __name__ == "__main__":
     #Set up the files
     functions.fetchInstruction(INSTRUCTION_FILENAME)
     functions.getMemory(INITIAL_MEMORY)
+
+    functions.currentInstruction = functions.instructionMemory(functions.instructionCounter)
     
     #main loop
     while(functions.currentInstruction != HALT):
+        #print(functions.currentInstruction)
         #perform instruction
-        functions.aluControl(functions.currentInstruction)
+        functions.controlUnit(functions.currentInstruction)
         
+        print(functions.instructionCounter)
         #increment counter
-        functions.incrementCounter(functions.counter)
+        functions.instructionCounter = functions.incrementCounter(functions.instructionCounter)
+        functions.currentInstruction = functions.instructionMemory(functions.instructionCounter)
+
+    
+    print("Program terminated")
+
+
         
         
     
