@@ -4,9 +4,21 @@ creating a single cycle processor using MIPS architecture
 """
 import functions
 
+#Change the 3 variables below for different files
+
+#Instruction filename is the name of the instruction file you want to use
 INSTRUCTION_FILENAME = "Instructions1.txt"
-MEMORY_FILENAME = "Memory1.txt"
+
+#Initial Memory is the IMemory file you want to use
 INITIAL_MEMORY = "IMemory.txt"
+
+#Memory Filename is the memory file that will be outputted
+MEMORY_FILENAME = "Memory1.txt"
+
+#Register Filename is the register file that will be outputted
+REGISTER_FILENAME = "Registers1.txt"
+
+
 HALT = "11111111111111111111111111111111"
 """
 iMemoryList = []
@@ -28,15 +40,18 @@ if __name__ == "__main__":
     while(functions.currentInstruction != HALT):
         #print(functions.currentInstruction)
         #perform instruction
-        functions.controlUnit(functions.currentInstruction)
-        
-        print(functions.instructionCounter)
+        functions.controlUnit(functions.currentInstruction, functions.instructionCounter)
+
         #increment counter
         functions.instructionCounter = functions.incrementCounter(functions.instructionCounter)
         functions.currentInstruction = functions.instructionMemory(functions.instructionCounter)
 
-    
-    print("Program terminated")
+    #Writing to file
+    functions.writeToFile(functions.iMemoryList, MEMORY_FILENAME)
+    functions.writeToFile(functions.REGISTERS, REGISTER_FILENAME)
+
+
+    print("Program has completed")
 
 
         

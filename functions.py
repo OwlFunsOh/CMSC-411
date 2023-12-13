@@ -1,4 +1,4 @@
-
+instructionCounter = 0
 
 #get memory will populate the IMemory.txt into iMemoryList
 def getMemory(filename):
@@ -81,10 +81,10 @@ def incrementCounter(counter):
     
 #control unit will take the first 6 bits of the instruction as an input
 #and determine what instruction should be ran
-def controlUnit(instruction):
+def controlUnit(instruction, counter):
     opcode = instruction[0:6]
     if(opcode == "000000"):
-        return aluControl(instruction[26:])
+        aluControl(instruction)
     elif(opcode == "001001"):
         addiu(instruction)
     elif(opcode == "000100"):
@@ -101,15 +101,18 @@ def controlUnit(instruction):
 #this function will only be ran if it is an R type instruction
 #It will get the func code of the instruction as the input and output
 #the operation the ALU has to do
-def aluControl(funcCode):
+def aluControl(instruction):
+    funcCode = instruction[26:]
     if(funcCode == "100001"):
-        return "addu"
+        addu(instruction)
     elif(funcCode == "100011"):
-        return "subu"
+        subu(instruction)
     elif(funcCode == "100100"):
-        return "and"
+        bitwiseAnd(instruction)
     elif(funcCode == "100101"):
-        return "or"
+        bitwiseOr(instruction)
+    elif(funcCode == "100111"):
+        bitwiseNor(instruction)
 
 def binaryAdder(num1, num2):
     #Converting to base 2 format
@@ -151,33 +154,31 @@ def bitwiseOr(instruction):
     destinationReg = binary_to_decimal(instruction[16:21])
     bitwiseOr = ""
     
-    length = targetReg.length()
+    length = len(REGISTERS[targetReg])
     
     for i in range(length):
-        if(sourceReg[i] or targetReg[i]):
-            bitwiseOr.append(1)
+        if(REGISTERS[sourceReg][i] == "1" or REGISTERS[targetReg][i] == "1"):
+            bitwiseOr = bitwiseOr = bitwiseOr + "1"
         else:
-            bitwiseOr.append(0)
+            bitwiseOr = bitwiseOr = bitwiseOr + "0"
     
-    bitwiseOr.zfill(32)
     REGISTERS[destinationReg] = bitwiseOr
 
 def bitwiseNor(instruction):
     targetReg = binary_to_decimal(instruction[11:16])
     sourceReg = binary_to_decimal(instruction[6:11])
     destinationReg = binary_to_decimal(instruction[16:21])
-    bitwiseOr = ""
+    bitwiseNor = ""
     
-    length = targetReg.length()
+    length = len(REGISTERS[targetReg])
     
     for i in range(length):
-        if(sourceReg[i] or targetReg[i]):
-            bitwiseOr.append(0)
+        if(REGISTERS[sourceReg][i] == "1" or REGISTERS[targetReg][i] == "1"):
+            bitwiseNor = bitwiseNor + "0"
         else:
-            bitwiseOr.append(1)
+            bitwiseNor = bitwiseNor + "1"
     
-    bitwiseOr.zfill(32)
-    REGISTERS[destinationReg] = bitwiseOr
+    REGISTERS[destinationReg] = bitwiseNor
 
 
 def bitwiseAnd(instruction):
@@ -186,15 +187,14 @@ def bitwiseAnd(instruction):
     destinationReg = binary_to_decimal(instruction[16:21])
     bitwiseAnd = ""
     
-    length = targetReg.length()
+    length = len(REGISTERS[targetReg])
     
     for i in range(length):
-        if(sourceReg[i] == 1 and targetReg[i] == 1):
-            bitwiseAnd.append(1)
+        if(REGISTERS[sourceReg][i] == "1" and REGISTERS[targetReg][i] == "1"):
+            bitwiseAnd = bitwiseAnd + "1"
         else:
-            bitwiseAnd.append(0)
+            bitwiseAnd = bitwiseAnd + "0"
     
-    bitwiseOr.zfill(32)
     REGISTERS[destinationReg] = bitwiseAnd
 
 #Below are the I type instructions
@@ -204,9 +204,9 @@ def addiu(instruction):
     sourceReg = binary_to_decimal(instruction[6:11])
     immediate = binary_to_decimal(instruction[16:32])
 
-    num1 = binary_to_decimal(REGISTERS[immediate])
+    #num1 = binary_to_decimal(REGISTERS[immediate])
     num2 = binary_to_decimal(REGISTERS[sourceReg])
-    sum = num1 + num2
+    sum = immediate + num2
 
     REGISTERS[targetReg] = decimal_to_binary(sum)
 
@@ -215,32 +215,47 @@ def loadWord(instruction):
     sourceReg = binary_to_decimal(instruction[6:11])
     immediate = binary_to_decimal(instruction[16:32])
 
-    toLoad = iMemoryList[immediate + sourceReg]
-    REGISTERS[targetReg] = toLoad
+    num1 = binary_to_decimal(iMemoryList[immediate])
+    num2 = binary_to_decimal(REGISTERS[sourceReg])
+    toLoad = num1 + num2
+    REGISTERS[targetReg] = decimal_to_binary(toLoad)
 
 def storeWord(instruction):
     targetReg = binary_to_decimal(instruction[11:16])
     sourceReg = binary_to_decimal(instruction[6:11])
     immediate = binary_to_decimal(instruction[16:32])
 
-    storeAddress = sourceReg + immediate
+    num1 = binary_to_decimal(REGISTERS[sourceReg])
+    #num2 = binary_to_decimal(iMemoryList[immediate])
+    storeAddress = num1 + immediate
     iMemoryList[storeAddress] = REGISTERS[targetReg] 
 
 
 def beq(instruction):
+    global instructionCounter   
     targetReg = binary_to_decimal(instruction[11:16])
     sourceReg = binary_to_decimal(instruction[6:11])
     immediate = binary_to_decimal(instruction[16:32])
 
     if(REGISTERS[sourceReg] == REGISTERS[targetReg]):
-        instructionCounter = instructionCounter + immediate
+        #counter = counter + immediate
+        for i in range(immediate):
+            instructionCounter = incrementCounter(instructionCounter)
+    
     
         
 #Below will be the J type instructions
 
 def jump(instruction):
+    global instructionCounter
     address = binary_to_decimal(instruction[6:32])
-    return address
+    instructionCounter = (address - 1)
+
+def writeToFile(list, filename):
+    with open(filename, 'w') as memoryFile:
+        for i in range(32):
+            memoryFile.write(list[i] + "\n")
+        memoryFile.close()
     
     
 iMemoryList = []
